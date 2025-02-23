@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PasteIt API Documentation</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        :root {
+            --sidebar-width: 250px;
+            --navbar-height: 64px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: var(--navbar-height);
+            box-sizing: border-box;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #1e3a8a;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #1e3a8a;
+        }
+
+        .nav-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+        }
+
+        .nav-title {
+            font-weight: 600;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .layout {
+            display: flex;
+            margin-top: var(--navbar-height);
+            min-height: calc(100vh - var(--navbar-height));
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            height: calc(100vh - var(--navbar-height));
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 1rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 0.375rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link:hover {
+            background-color: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .sidebar-link.active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border-left-color: #2563eb;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            flex: 1;
+            max-width: calc(100% - var(--sidebar-width));
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 90;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1rem;
+            }
+        }
+
+        /* Rest of your existing styles for endpoints, code blocks, etc. */
+        .endpoint {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .endpoint-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .endpoint-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0;
+        }
+
+        .method {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .method.get {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .method.post {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .endpoint-url {
+            font-family: monospace;
+            color: #475569;
+        }
+
+        .endpoint-content {
+            padding: 1.5rem;
+        }
+
+        .description {
+            color: #475569;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: #1e293b;
+        }
+
+        .code-block {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            overflow-x: auto;
+            white-space: pre;
+            margin: 1rem 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .tag.required {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tag.optional {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" id="menuToggle">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <a href="/" class="nav-brand">
+                <svg class="nav-logo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="nav-title">PasteIt API Docs</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="layout">
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Getting Started</div>
+                    <a href="#introduction" class="sidebar-link">Introduction</a>
+                    <!-- <a href="#authentication" class="sidebar-link">Authentication</a> -->
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Endpoints</div>
+                    <a href="#status" class="sidebar-link">Check API Status</a>
+                    <a href="#create-paste" class="sidebar-link">Create Paste</a>
+                    <a href="#get-paste" class="sidebar-link">Get Paste</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Error Handling</div>
+                    <a href="#errors" class="sidebar-link">Error Responses</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section id="introduction">
+                <h1>Introduction</h1>
+                <p>Welcome to the PasteIt API documentation. Our API enables you to programmatically create and retrieve pastes using simple HTTP requests.</p>
+                <p>All responses are returned in JSON format.</p>
+            </section>
+
+            <section id="status" class="endpoint">
+                <div class="endpoint-header">
+                    <h2 class="endpoint-title">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-url">/api/status</span>
+                    </h2>
+                </div>
+                <div class="endpoint-content">
+                    <div class="description">Check if the API is running and available.</div>
+                    
+                    <div class="section-title">Response Example</div>
+                    <div class="code-block">{
+    "message": "API is running",
+    "status": "success"
+}</div>
+                </div>
+            </section>
+
+            <section id="create-paste" class="endpoint">
+                <div class="endpoint-header">
+                    <h2 class="endpoint-title">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-url">/api/paste</span>
+                    </h2>
+                </div>
+                <div class="endpoint-content">
+                    <div class="description">Create a new paste with the provided content.</div>
+
+                    <div class="section-title">Request Body</div>
+                    <div class="code-block">{
+    "content": "Your paste content here..."  // Required
+}</div>
+
+                    <div class="section-title">Success Response</div>
+                    <div class="code-block">{
+    "status": "success",
+    "message": "Paste created",
+    "data": {
+        "short_link": "2zAi7vGxmy3zLvSF77deT"
+    }
+}</div>
+
+                    <div class="section-title">Error Response</div>
+                    <div class="code-block">{
+    "status": "error",
+    "message": "Failed to create paste: [error details]"
+}</div>
+                </div>
+            </section>
+
+            <section id="get-paste" class="endpoint">
+                <div class="endpoint-header">
+                    <h2 class="endpoint-title">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-url">/api/{shortlink}</span>
+                    </h2>
+                </div>
+                <div class="endpoint-content">
+                    <div class="description">Retrieve a paste using its short link.</div>
+
+                    <div class="section-title">Parameters</div>
+                    <p><span class="tag required">required</span> <code>shortlink</code> - The unique short link of the paste</p>
+
+                    <div class="section-title">Success Response</div>
+                    <div class="code-block">{
+    "status": "success",
+    "message": "Paste retrieved",
+    "data": {
+        "id": "01JMRE0TSXQZ3ZVG7WGE4CXZ21",
+        "short_link": "2zAi7vGxmy3zLvSF77deT",
+        "content": "Paste content here...",
+        "created_at": "2025-02-23T03:36:08.768062+00:00"
+    }
+}</div>
+
+                    <div class="section-title">Error Response</div>
+                    <div class="code-block">{
+    "status": "error",
+    "message": "Paste not found"
+}</div>
+                </div>
+            </section>
+
+            <section id="errors">
+                <h2>Error Handling</h2>
+                <p>The API uses conventional HTTP response codes to indicate the success or failure of requests:</p>
+                <ul>
+                    <li><strong>200</strong> - Success</li>
+                    <li><strong>201</strong> - Created successfully</li>
+                    <li><strong>400</strong> - Bad request</li>
+                    <li><strong>404</strong> - Resource not found</li>
+                    <li><strong>500</strong> - Internal server error</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        const sections = document.querySelectorAll('section[id]');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+        function setActiveSection() {
+            const scrollPosition = window.scrollY;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    sidebarLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${sectionId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }
+
+        window.addEventListener('scroll', setActiveSection);
+        
+        setActiveSection();
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleMenu();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
