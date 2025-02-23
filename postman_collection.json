@@ -1,0 +1,68 @@
+{
+  "info": {
+    "name": "Paste-It API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get API Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3030/status",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3030",
+          "path": ["status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Paste",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"This is a test paste\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3030/paste",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3030",
+          "path": ["paste"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Paste by Shortlink",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3030/{shortlink}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3030",
+          "path": ["{shortlink}"],
+          "variable": [
+            {
+              "key": "shortlink",
+              "value": "your_shortlink_here"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

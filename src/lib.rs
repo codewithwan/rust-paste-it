@@ -3,9 +3,9 @@ pub mod entities;
 pub mod models;
 pub mod handlers;
 pub mod routes;
-pub mod views; // Update this line
+pub mod views; 
 
-pub use routes::create_routes; // Keep this line
+pub use routes::create_routes; 
 
 use sea_orm::DatabaseConnection;
 
