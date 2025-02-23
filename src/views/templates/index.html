@@ -198,6 +198,13 @@
             background-color: #1d4ed8;
         }
 
+        .char-counter {
+            text-align: right;
+            font-size: 0.875rem;
+            color: #475569;
+            margin-top: 0.5rem;
+        }
+
         @media (max-width: 640px) {
             .nav-container {
                 flex-direction: column;
@@ -285,16 +292,35 @@
                 </div>
             </div>
 
+            
             <form class="form" method="POST" action="/paste">
+                <div class="char-counter" id="charCounter">0/2000</div>
                 <textarea 
                     class="textarea" 
                     name="content" 
                     placeholder="Paste your content here..."
                     required
+                    maxlength="2000"
+                    oninput="updateCharCount(this)"
                 ></textarea>
+
                 <button type="submit" class="submit-button">Create Paste</button>
             </form>
         </div>
     </main>
+    <script>
+        function updateCharCount(textarea) {
+            const charCounter = document.getElementById('charCounter');
+            charCounter.textContent = `${String(textarea.value).length}/2000`;
+        }
+
+        document.querySelector('.form').addEventListener('submit', function(event) {
+            const textarea = document.querySelector('.textarea');
+            if (typeof textarea.value !== 'string') {
+                event.preventDefault();
+                alert('Invalid input. Please enter valid text.');
+            }
+        });
+    </script>
 </body>
 </html>

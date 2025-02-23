@@ -5,8 +5,8 @@ use axum::{
     Json,
 };
 use tracing::{info, error};
-use crate::entities::paste::{self, Entity as Paste}; // Update the import path
-use crate::models::model::{CreatePasteRequest, CreatePasteResponse, CreateDataPaste, PasteResponse, PasteData}; // Update the import path
+use crate::entities::paste::{self, Entity as Paste}; 
+use crate::models::model::{CreatePasteRequest, CreatePasteResponse, CreateDataPaste, PasteResponse, PasteData}; 
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use ulid::Ulid;
 use crate::AppState;

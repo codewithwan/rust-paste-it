@@ -15,5 +15,5 @@ pub fn create_api_routes(state: AppState) -> Router {
         )
         .route("/paste", post(handler::create_paste))
         .route("/{shortlink}", get(handler::get_paste_by_shortlink))
-        .with_state(state) // Add this line
+        .with_state(state) 
 }
